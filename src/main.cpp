@@ -2,6 +2,8 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include "lexer.cpp"
+#include <vector>
 
 int main(int argc, char* argv[]){
     if (argc != 2){
@@ -22,7 +24,11 @@ int main(int argc, char* argv[]){
         contents = contents_stream.str();
     }
 
-    std::cout << contents << std::endl;
+    Lexer lexer(std::move(contents));
+
+    std::vector<Token> test = lexer.lex();
+
+    std::cout << test[1].value << std::endl;
 
 
     return EXIT_SUCCESS;
