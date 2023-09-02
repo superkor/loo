@@ -1,22 +1,8 @@
 #include <vector>
 #include <string>
 #include <iostream>
-
-enum class Type{
-    _return,
-    _int,
-    _float,
-    semiColon,
-    openRound,
-    closeRound,
-    identifier,
-    let
-};
-
-struct Token{
-    Type type;
-    std::string value = "";
-};
+#include "types.hpp"
+#include "token.hpp"
 
 class Lexer{
     public:
@@ -34,7 +20,7 @@ class Lexer{
         char consume(){
             return src.at(index++);
         };
-        int index = 0;
+        size_t index = 0;
         const std::string src;
 };
 
@@ -59,7 +45,6 @@ std::vector<Token> Lexer::lex(){
             }
 
             buffer.clear();
-            continue;
         } else if (std::isdigit(peek())){
             buffer.push_back(consume());
             while(peek() != '\0' && std::isdigit(peek())){
@@ -68,26 +53,28 @@ std::vector<Token> Lexer::lex(){
 
             tokens.push_back({.type = Type::_int, .value = buffer});
             buffer.clear();
-            continue;
         } else if (peek() == '('){
             consume();
             tokens.push_back({.type = Type::openRound});
-            continue;
         } else if (peek() == ')'){
             consume();
             tokens.push_back({.type = Type::closeRound});
-            continue;
         } else if (peek() == ';'){
             consume();
             tokens.push_back({.type = Type::semiColon});
-            continue;
         } else if (std::iswspace(peek())){
             consume(); 
-            continue;
+        } else if (peek() == '{'){
+            consume();
+            tokens.push_back({.type = Type::openCurly});
+        } else if (peek() == '}'){
+            consume();
+            tokens.push_back({.type = Type::closeCurly});
         } else {
             std::cerr << "Error at " << index << std::endl;
             exit(EXIT_FAILURE);
         }
+        continue;
         
     }
 
