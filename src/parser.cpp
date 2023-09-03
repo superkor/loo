@@ -3,14 +3,15 @@
 #include <iostream>
 #include "types.hpp"
 #include "token.hpp"
-
-struct NodeTerms{
-
-};
+#include "node.hpp"
 
 class Parser{
     public:
         Parser(std::vector<Token> tokens) : tokens(std::move(tokens)){};
+
+        NodeExit parseExit(){
+            
+        }
 
     private:
         Token peek(int offset = 0) const {

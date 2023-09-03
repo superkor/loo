@@ -40,9 +40,12 @@ std::vector<Token> Lexer::lex(){
                 tokens.push_back({.type = Type::_return});
             } else if (buffer == "let"){
                 tokens.push_back({.type = Type::let});
-            } else {
-                tokens.push_back({.type = Type::identifier, .value = buffer});
+            } else if (buffer == "exit") {
+                tokens.push_back({.type = Type::exit});
             }
+            else {
+                tokens.push_back({.type = Type::identifier, .value = buffer});
+            } 
 
             buffer.clear();
         } else if (std::isdigit(peek())){
