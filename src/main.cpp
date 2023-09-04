@@ -15,21 +15,50 @@ int main(int argc, char* argv[]){
     std::cout << argv[1] << std::endl;
     
     std::string contents;
-    {
-        std::stringstream contents_stream;
 
-        std::fstream input(argv[1], std::ios::in);
+    std::stringstream contents_stream;
 
-        contents_stream << input.rdbuf();
+    std::fstream input(argv[1], std::ios::in);
 
-        contents = contents_stream.str();
-    }
+    contents_stream << input.rdbuf();
+
+    contents = contents_stream.str();
+
+    input.close();
 
     Lexer lexer(std::move(contents));
 
-    std::vector<Token> test = lexer.lex();
+    std::vector<Token> tokens = lexer.lex();
 
-    std::cout << test[1].value << std::endl;
+    /* for (Token x : tokens){
+        std::string output = "";
+        if (x.type == Type::exit){
+            output = "exit";
+        } else if (x.type == Type::openRound){
+            output = "(";
+        } else if (x.type == Type::closeRound){
+            output = ")";
+        } else if (x.type == Type::_int){
+            output = "int";
+        } else if (x.type == Type::semiColon){
+            output = ";";
+        }
+        std::cout<< "type: " << output << "\t";
+        std::cout << "value: " << x.value << std::endl;
+    }
+ */
+
+    Parser parser(std::move(tokens));
+    NodeExit* node = parser.parse();
+
+    if (node != nullptr){
+        std::cout << node->expr._int.value << std::endl;
+    } else {
+        std::cout << "something went wrong" << std::endl;
+    }
+
+    delete node;
+    node = nullptr;
 
 
     return EXIT_SUCCESS;
