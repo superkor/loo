@@ -1,7 +1,6 @@
 #include <vector>
 #include <string>
 #include <iostream>
-#include "types.hpp"
 #include "token.hpp"
 
 class Lexer{

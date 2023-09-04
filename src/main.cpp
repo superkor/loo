@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include "lexer.cpp"
+#include "parser.cpp"
 #include <vector>
 
 int main(int argc, char* argv[]){
