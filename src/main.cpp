@@ -5,6 +5,7 @@
 #include "lexer.cpp"
 #include "parser.cpp"
 #include <vector>
+#include "generator.cpp"
 
 int main(int argc, char* argv[]){
     if (argc != 2){
@@ -55,10 +56,24 @@ int main(int argc, char* argv[]){
         std::cout << node->expr._int.value << std::endl;
     } else {
         std::cout << "something went wrong" << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    Generator generator(std::move(*node));
+
+    {
+        std::fstream file("out.asm", std::ios::out);
+        file << generator.generate();
     }
 
     delete node;
     node = nullptr;
+
+    //assemble the x86_64 assembly code
+    system("nasm -felf64 out.asm");
+
+    //link asm
+    system("ld -o out out.o");
 
 
     return EXIT_SUCCESS;

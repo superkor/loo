@@ -68,6 +68,9 @@ class Parser{
                         delete nextToken;
                         nextToken = nullptr;
 
+                        delete exitNode;
+                        exitNode = nullptr;
+
                         exitError();
                     } else {
                         delete nextToken;
