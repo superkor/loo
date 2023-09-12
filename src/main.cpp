@@ -49,31 +49,33 @@ int main(int argc, char* argv[]){
     }
  */
 
-    Parser parser(std::move(tokens));
-    NodeExit* node = parser.parse();
+    Parser* parser = new Parser(std::move(tokens));
+    //NodeExit* node = parser.parse();
+    Node* tree = parser->createParseTree();
 
-    if (node != nullptr){
-        std::cout << node->expr._int.value << std::endl;
+    if (tree != nullptr){
+        std::cout << tree->left->type << std::endl;
+        std::cout << tree->left->left->value << std::endl;
     } else {
         std::cout << "something went wrong" << std::endl;
         return EXIT_FAILURE;
     }
 
-    Generator generator(std::move(*node));
+    Generator generator(std::move(tree));
 
     {
         std::fstream file("out.asm", std::ios::out);
         file << generator.generate();
     }
 
-    delete node;
-    node = nullptr;
-
     //assemble the x86_64 assembly code
     system("nasm -felf64 out.asm");
 
     //link asm
     system("ld -o out out.o");
+
+    delete parser;
+    parser = nullptr;
 
 
     return EXIT_SUCCESS;

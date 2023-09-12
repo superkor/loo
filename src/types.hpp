@@ -12,5 +12,7 @@ enum class Type{
     identifier,
     let,
     openCurly,
-    closeCurly
+    closeCurly,
+    int_type,
+    equals
 };

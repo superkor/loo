@@ -2,6 +2,7 @@
 #include <string>
 #include <iostream>
 #include "token.hpp"
+#include "node.hpp"
 
 class Lexer{
     public:
@@ -41,6 +42,8 @@ std::vector<Token> Lexer::lex(){
                 tokens.push_back({.type = Type::let});
             } else if (buffer == "exit") {
                 tokens.push_back({.type = Type::exit});
+            } else if (buffer == "int"){
+                tokens.push_back({.type = Type::int_type});
             }
             else {
                 tokens.push_back({.type = Type::identifier, .value = buffer});
@@ -72,7 +75,11 @@ std::vector<Token> Lexer::lex(){
         } else if (peek() == '}'){
             consume();
             tokens.push_back({.type = Type::closeCurly});
-        } else {
+        } else if (peek() == '='){
+            consume();
+            tokens.push_back({.type = Type::equals});
+        }        
+        else {
             std::cerr << "Error at " << index << std::endl;
             exit(EXIT_FAILURE);
         }
