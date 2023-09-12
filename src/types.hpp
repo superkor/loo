@@ -10,7 +10,6 @@ enum class Type{
     openRound,
     closeRound,
     identifier,
-    let,
     openCurly,
     closeCurly,
     int_type,

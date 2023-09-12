@@ -34,12 +34,11 @@ std::vector<Token> Lexer::lex(){
             while(peek() != '\0' && std::isalnum(peek())){
                 buffer.push_back(consume());
             }
+            std::cout << buffer << "\n";
 
 
             if (buffer == "return"){
                 tokens.push_back({.type = Type::_return});
-            } else if (buffer == "let"){
-                tokens.push_back({.type = Type::let});
             } else if (buffer == "exit") {
                 tokens.push_back({.type = Type::exit});
             } else if (buffer == "int"){
@@ -55,6 +54,9 @@ std::vector<Token> Lexer::lex(){
             while(peek() != '\0' && std::isdigit(peek())){
                 buffer.push_back(consume());
             }
+
+            std::cout << buffer << "\n";
+
 
             tokens.push_back({.type = Type::_int, .value = buffer});
             buffer.clear();
@@ -83,7 +85,6 @@ std::vector<Token> Lexer::lex(){
             std::cerr << "Error at " << index << std::endl;
             exit(EXIT_FAILURE);
         }
-        continue;
         
     }
 
