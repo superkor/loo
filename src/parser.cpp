@@ -32,6 +32,7 @@ class Parser{
 
         Node* createParseTree(){
             try {
+                bool hasExit = false;
                 nextToken = peek();
                 Node* last = curr;
 
@@ -194,9 +195,15 @@ class Parser{
                         delete nextToken;
                         nextToken = peek();
 
+                        hasExit = true;
+
                         continue;
                     }
 
+                }
+
+                if (!hasExit){
+                    throw Type::exit;
                 }
 
                 return root;
@@ -204,7 +211,7 @@ class Parser{
             catch (Type expected){
                 delete nextToken;
                 nextToken = nullptr;
-                std::cerr << "Invalid Expression at " << index << "!" << std::endl;
+                std::cerr << "Invalid Expression at token " << index << "!" << std::endl;
                 std::cerr << "Expected " << expected << std::endl;
                 exit(EXIT_FAILURE);
             }
