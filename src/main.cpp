@@ -30,25 +30,7 @@ int main(int argc, char* argv[]){
     Lexer lexer(std::move(contents));
 
     std::vector<Token> tokens = lexer.lex();
-
-    /* for (Token x : tokens){
-        std::string output = "";
-        if (x.type == Type::exit){
-            output = "exit";
-        } else if (x.type == Type::openRound){
-            output = "(";
-        } else if (x.type == Type::closeRound){
-            output = ")";
-        } else if (x.type == Type::_int){
-            output = "int";
-        } else if (x.type == Type::semiColon){
-            output = ";";
-        }
-        std::cout<< "type: " << output << "\t";
-        std::cout << "value: " << x.value << std::endl;
-    }
- */
-
+    
     Parser* parser = new Parser(std::move(tokens));
 
     Node* tree = parser->createParseTree();

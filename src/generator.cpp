@@ -21,11 +21,10 @@ class Generator{
                         if (variables.contains(currNode->getChild(0)->getValue())){
                             throw "Identifier " + currNode->getChild(0)->getValue() + " already exists";
                         }
-
-                        std::cout << "on identifier " << currNode->getChild(0)->getValue() << std::endl;
                         
                         if (currNode->getChild(0)->getChild(0)->getType() == Type::_int || isBinaryOperator(currNode->getChild(0)->getChild(0)->getType())){
-                            //value of variable is pushed to stack                        
+                            //value of variable is pushed to stack              
+                            std::cout << "TEST TEST TEST" << (currNode->getChild(0)->getChild(0)->getType() == Type::add) << std::endl;          
                             output << "    mov rax, " << compute(currNode->getChild(0)->getChild(0)) << "\n";
                             //variable assigned a space in stack
                             variables[currNode->getChild(0)->getValue()] = stack_size;
@@ -102,29 +101,6 @@ class Generator{
             stack_size--;
         }
 
-        int compute(Node* node){
-            if (isBinaryOperator(node->getType())){
-                return calculate(node);
-            }
-            return stoi(node->getValue());
-        }
-
-        //incomplete
-        int calculate(Node* node){
-            switch(node->getType()){
-                case Type::add:
-                    return compute(node->getChild(0)) + compute(node->getChild(1));
-                case Type::divide:
-                    return compute(node->getChild(0)) / compute(node->getChild(1));
-                case Type::subtract:
-                    return compute(node->getChild(0)) - compute(node->getChild(1));
-                case Type::asterisk:
-                    return compute(node->getChild(0)) * compute(node->getChild(1));
-                default:
-                    return false;
-            };  
-        }
-
         bool isBinaryOperator(Type type){
             switch(type){
                 case Type::add:
@@ -138,5 +114,31 @@ class Generator{
                 default:
                     return false;
             };      
+        }
+
+        int compute(Node* node){
+            if (node->getType() != Type::_int && node->getType() != Type::identifier){
+                return calculate(node);
+            }
+            return stoi(node->getValue());
+        }
+
+        //incomplete
+        int calculate(Node* node){
+            switch(node->getType()){
+                case Type::add:
+                    return compute(node->getChild(0)) + compute(node->getChild(1));
+                    
+                case Type::divide:
+                    return compute(node->getChild(0)) / compute(node->getChild(1));
+                    
+                case Type::subtract:
+                    return compute(node->getChild(0)) - compute(node->getChild(1));
+                    
+                case Type::asterisk:
+                    return compute(node->getChild(0)) * compute(node->getChild(1));
+                default:
+                    return false;
+            };  
         }
 };
