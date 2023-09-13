@@ -24,15 +24,33 @@ class Generator{
 
                         std::cout << "on identifier " << currNode->getChild(0)->getValue() << std::endl;
                         
-                        //value of variable is pushed to stack                        
-                        output << "    mov rax, " << compute(currNode->getChild(0)->getChild(0)) << "\n";
-                        //variable assigned a space in stack
-                        variables[currNode->getChild(0)->getValue()] = stack_size;
-                        std::cout << "pushed " << currNode->getChild(0)->getValue() << std::endl;
-                        push("rax");
-                        
+                        if (currNode->getChild(0)->getChild(0)->getType() == Type::_int || isBinaryOperator(currNode->getChild(0)->getChild(0)->getType())){
+                            //value of variable is pushed to stack                        
+                            output << "    mov rax, " << compute(currNode->getChild(0)->getChild(0)) << "\n";
+                            //variable assigned a space in stack
+                            variables[currNode->getChild(0)->getValue()] = stack_size;
+                            std::cout << "pushed " << currNode->getChild(0)->getValue() << std::endl;
+                            push("rax");
+                            continue;
+                        }
 
-                        continue;
+                        else if (currNode->getChild(0)->getChild(0)->getType() == Type::identifier){
+                            if (!variables.contains(currNode->getChild(0)->getChild(0)->getValue())){
+                                throw "Identifier " + currNode->getChild(0)->getChild(0)->getValue() + " is not declared";
+                            }
+
+                            //variable assigned a space in stack
+                            variables[currNode->getChild(0)->getValue()] = stack_size;
+                            std::cout << "pushed " << currNode->getChild(0)->getValue() << std::endl;
+
+                            std::stringstream offset;
+                            offset << "QWORD [rsp + " << (stack_size - variables[currNode->getValue()] - 1)* 8 << "]";
+                            push(offset.str());
+                            continue;
+                        } else {
+                            throw "Something went wrong. Not an identifier or int";
+                        }
+
                     }
 
                     if (currNode->getType() == Type::exit){
@@ -95,13 +113,13 @@ class Generator{
         int calculate(Node* node){
             switch(node->getType()){
                 case Type::add:
-                    return stoi(node->getChild(0)->getValue()) + stoi(node->getChild(1)->getValue());
+                    return compute(node->getChild(0)) + compute(node->getChild(1));
                 case Type::divide:
-                    return stoi(node->getChild(0)->getValue()) / stoi(node->getChild(1)->getValue());;
+                    return compute(node->getChild(0)) / compute(node->getChild(1));
                 case Type::subtract:
-                    return stoi(node->getChild(0)->getValue()) - stoi(node->getChild(1)->getValue());;
+                    return compute(node->getChild(0)) - compute(node->getChild(1));
                 case Type::asterisk:
-                    return stoi(node->getChild(0)->getValue()) * stoi(node->getChild(1)->getValue());;
+                    return compute(node->getChild(0)) * compute(node->getChild(1));
                 default:
                     return false;
             };  
