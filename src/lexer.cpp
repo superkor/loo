@@ -54,10 +54,6 @@ std::vector<Token> Lexer::lex(){
             while(peek() != '\0' && std::isdigit(peek())){
                 buffer.push_back(consume());
             }
-
-            std::cout << buffer << "\n";
-
-
             tokens.push_back({.type = Type::_int, .value = buffer});
             buffer.clear();
         } else if (peek() == '('){
@@ -80,7 +76,19 @@ std::vector<Token> Lexer::lex(){
         } else if (peek() == '='){
             consume();
             tokens.push_back({.type = Type::equals});
-        }        
+        } else if (peek() == '+'){
+            consume();
+            tokens.push_back({.type = Type::add});
+        } else if (peek() == '/'){
+            consume();
+            tokens.push_back({.type = Type::divide});
+        } else if (peek() == '-'){
+            consume();
+            tokens.push_back({.type = Type::subtract});
+        } else if (peek() == '*'){
+            consume();
+            tokens.push_back({.type = Type::asterisk});
+        }
         else {
             std::cerr << "Error at " << index << std::endl;
             exit(EXIT_FAILURE);

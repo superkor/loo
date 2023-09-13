@@ -53,16 +53,6 @@ int main(int argc, char* argv[]){
 
     Node* tree = parser->createParseTree();
 
-    /* if (tree != nullptr){
-        std::cout << tree->left->type << std::endl;
-        std::cout << tree->left->left->value << std::endl;
-    } else {
-        std::cout << "something went wrong" << std::endl;
-        return EXIT_FAILURE;
-    } */
-
-    std::cout << "test" << std::endl;
-
     Generator generator(std::move(tree));
 
     {

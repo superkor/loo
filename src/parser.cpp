@@ -3,6 +3,8 @@
 #include <iostream>
 #include "token.hpp"
 #include "node.hpp"
+#include <stack>
+#include "mathParser.cpp"
 
 
 std::ostream& operator << (std::ostream &os, Type const& types){
@@ -28,7 +30,7 @@ std::ostream& operator << (std::ostream &os, Type const& types){
 
 class Parser{
     public:
-        Parser(std::vector<Token> tokens) : tokens(std::move(tokens)){};
+        Parser(const std::vector<Token> tokens) : tokens(std::move(tokens)){};
 
         Node* createParseTree(){
             try {
@@ -40,6 +42,7 @@ class Parser{
                 while (nextToken != nullptr){
                     curr = last;
                     std::cout << nextToken->type << std::endl;
+                    std::cout << "index" << index << std::endl;
 
 
                     //declaring variable
@@ -85,7 +88,13 @@ class Parser{
                         delete nextToken;
                         nextToken = peek();
 
-                        //int literal
+                        MathParser* math = new MathParser(curr, tokens, index);
+
+                        math->parse();
+
+                        delete math;
+
+                        /* //int literal
                         if (nextToken == nullptr || nextToken->type != Type::_int){
                             throw Type::_int;
                         }
@@ -102,13 +111,13 @@ class Parser{
                         curr = node;
 
                         delete nextToken;
-                        nextToken = peek();
+                        nextToken = peek(); */
 
-                        if (nextToken == nullptr || nextToken->type != Type::semiColon){
+                        /* if (nextToken == nullptr || nextToken->type != Type::semiColon){
                             throw Type:: semiColon;
-                        }
+                        } */
 
-                        consume();
+                        /* consume(); */
 
                         delete nextToken;
                         nextToken = peek();
@@ -263,7 +272,8 @@ class Parser{
             return;
         }
 
-        std::vector<Token> tokens;
+
+        const std::vector<Token> tokens;
         size_t index = 0;
         Token* nextToken = nullptr;
         Node* root = new Node();

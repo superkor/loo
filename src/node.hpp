@@ -26,8 +26,19 @@ class Node {
             if (index < 0 || index > children.size()){
                 return;
             }
-            delete children.at(index);
             children.erase(std::next(children.begin(), index));
+        }
+
+        void removeChild(Node* child){
+            for (int i = 0; i < children.size(); i++){
+                if (child == children[i]){
+                    children.erase(std::next(children.begin(), i));
+                }
+            }
+        }
+
+        void unsetParent(){
+            parent = nullptr;
         }
 
         Type getType() { return type; }

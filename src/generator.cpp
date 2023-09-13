@@ -1,5 +1,7 @@
 #include <string>
+#include <iostream>
 #include "node.hpp"
+#include "types.hpp"
 #include <sstream>
 #include <unordered_map>
 
@@ -20,10 +22,13 @@ class Generator{
                             throw "Identifier " + currNode->getChild(0)->getValue() + " already exists";
                         }
 
-                        //value of variable is pushed to stack
-                        output << "    mov rax, " << currNode->getChild(0)->getChild(0)->getValue() << "\n";
+                        std::cout << "on identifier " << currNode->getChild(0)->getValue() << std::endl;
+                        
+                        //value of variable is pushed to stack                        
+                        output << "    mov rax, " << compute(currNode->getChild(0)->getChild(0)) << "\n";
                         //variable assigned a space in stack
                         variables[currNode->getChild(0)->getValue()] = stack_size;
+                        std::cout << "pushed " << currNode->getChild(0)->getValue() << std::endl;
                         push("rax");
                         
 
@@ -44,7 +49,7 @@ class Generator{
                             std::stringstream offset;
                             offset << "QWORD [rsp + " << (stack_size - variables[currNode->getValue()] - 1)* 8 << "]";
                             push(offset.str());
-                            output << "    pop rdi\n";
+                            pop("rdi");
                             output << "    syscall\n";
 
                             continue;
@@ -77,5 +82,43 @@ class Generator{
         void pop(const std::string& reg){
             output << "    pop " << reg << "\n";
             stack_size--;
+        }
+
+        int compute(Node* node){
+            if (isBinaryOperator(node->getType())){
+                return calculate(node);
+            }
+            return stoi(node->getValue());
+        }
+
+        //incomplete
+        int calculate(Node* node){
+            switch(node->getType()){
+                case Type::add:
+                    return stoi(node->getChild(0)->getValue()) + stoi(node->getChild(1)->getValue());
+                case Type::divide:
+                    return stoi(node->getChild(0)->getValue()) / stoi(node->getChild(1)->getValue());;
+                case Type::subtract:
+                    return stoi(node->getChild(0)->getValue()) - stoi(node->getChild(1)->getValue());;
+                case Type::asterisk:
+                    return stoi(node->getChild(0)->getValue()) * stoi(node->getChild(1)->getValue());;
+                default:
+                    return false;
+            };  
+        }
+
+        bool isBinaryOperator(Type type){
+            switch(type){
+                case Type::add:
+                    return true;
+                case Type::divide:
+                    return true;
+                case Type::subtract:
+                    return true;
+                case Type::asterisk:
+                    return true;
+                default:
+                    return false;
+            };      
         }
 };
