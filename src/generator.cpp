@@ -56,7 +56,6 @@ class Generator{
 
                     if (currNode->getType() == Type::exit){
                         currNode = currNode->getChild(0);
-                        output << "    mov rax, 60\n";
 
                         if (currNode->getType() == Type::identifier){
                             std::unordered_map<std::string, size_t>::iterator variable = variables.find(currNode->getValue());
@@ -69,11 +68,16 @@ class Generator{
                             offset << "QWORD [rsp + " << (stack_size - variables[currNode->getValue()] - 1)* 8 << "]";
                             push(offset.str());
                             pop("rdi");
+                            output << "    mov rax, 60\n";
                             output << "    syscall\n";
 
                             continue;
-                        } else {
-
+                        } else if (currNode->getType() == Type::_int || isBinaryOperator(currNode->getType())){
+                            compute(currNode);
+                            pop("rdi");
+                            output << "    mov rax, 60\n";
+                            output << "    syscall\n";
+                            continue;
                         }
                     }
                 }
@@ -152,10 +156,6 @@ class Generator{
                 if (!variables.contains(node->getValue())){
                     throw "Identifier " + node->getValue() + " is not declared";
                 }
-
-                //variable assigned a space in stack
-                variables[node->getValue()] = stack_size;
-                //std::cout << "pushed " << node->getValue() << std::endl;
 
                 std::stringstream offset;
                 offset << "QWORD [rsp + " << (stack_size - variables[node->getValue()] - 1)* 8 << "]";

@@ -35,13 +35,13 @@ class MathParser{
         }
         
         
-        void parse(){
+        void parse(bool exitStatement = false){
             try {
                 if (current == nullptr){
                     throw Type::_undefined;
                 }
 
-                if (current->type == Type::semiColon){
+                if (current->type == Type::semiColon || (current->type == Type::closeRound && exitStatement)){
                     delete current;
                     current = getNextToken();
                     return;
@@ -57,7 +57,7 @@ class MathParser{
 
                     delete current;
                     current = getNextToken();                    
-                    parse();
+                    parse(exitStatement);
                     
                     return;
                 }
@@ -70,7 +70,7 @@ class MathParser{
                     //std::cout << "current " << current->type << " " << current->value << std::endl;
 
                     //binary operator already in tree has higher (or same) precedence
-                    if (insertTo->getType() == Type::_int || compare(insertTo->getType(), operationBuffer->getType())){
+                    if (insertTo->getType() == Type::_int || insertTo->getType() == Type::identifier || compare(insertTo->getType(), operationBuffer->getType())){
                         //set binary operation as the root
                         Node* tempParent = insertTo->getParent();
                         //std::cout << "tempParent " << insertTo->getParent()->getType() << " " << insertTo->getParent()->getValue() << std::endl;
@@ -131,7 +131,7 @@ class MathParser{
                     delete current;
                     current = getNextToken();
                     expectOperator = true;
-                    parse();
+                    parse(exitStatement);
                     return;
                     
                 } //detected bracket 
@@ -189,14 +189,15 @@ class MathParser{
         */
         bool compare(const Type& a, const Type&b){
             try {
+
+                /* std::cout << "a " << a << std::endl;
+                std::cout << "b " << b << std::endl; */
+
                 std::vector<Type> operators = {Type::add, Type::subtract, Type::divide, Type::asterisk};
 
                 if (std::find(operators.begin(), operators.end(), a) == operators.end() || std::find(operators.begin(), operators.end(), b) == operators.end()){
                     throw std::string("a or b is not a binary operator");
                 }
-
-                //std::cout << "a " << a << std::endl;
-                //std::cout << "b " << b << std::endl;
 
                 switch(a){
                     case Type::add:
@@ -221,7 +222,7 @@ class MathParser{
 
 
             } catch (std::string message){
-                std::cerr << message << std::endl;
+                std::cerr << message << " at " << index << std::endl;
                 exit(EXIT_FAILURE);
             }
         }

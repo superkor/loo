@@ -102,50 +102,12 @@ class Parser{
                         delete nextToken;
                         nextToken = peek();
 
-                        //integer literal
-                        if (nextToken != nullptr && nextToken->type == Type::_int){
-                            Token* token = consume(true);
-                            node = new Node(token->type, token->value);
-                            node->setParent(curr);
-                            curr->addChild(node);
+                        MathParser* math = new MathParser(curr, tokens, index);
 
-                            delete token;
-                            token = nullptr;
+                        math->parse(true);
 
-                            curr = node;
+                        delete math;
 
-                            delete token;
-                            token = nullptr;
-                        } 
-                        //variable
-                        else if (nextToken != nullptr && nextToken->type == Type::identifier){
-                            Token* token = consume(true);
-                            node = new Node(token->type, token->value);
-                            node->setParent(curr);
-                            curr->addChild(node);
-
-                            delete token;
-                            token = nullptr;
-
-                            curr = node;
-
-                            delete token;
-                            token = nullptr;
-                        } 
-                        
-                        else {
-                            throw Type::_int;
-                        }
-
-                        delete nextToken;
-                        nextToken = peek();
-
-                        if (nextToken == nullptr || nextToken->type != Type::closeRound){
-                            std::cerr << nextToken->type << std::endl;
-                            throw Type::closeRound;
-                        }
-
-                        consume();
                         delete nextToken;
                         nextToken = peek();
 
