@@ -3,6 +3,7 @@
 #include "node.hpp"
 #include "types.hpp"
 #include "token.hpp"
+#include "shared.cpp"
 
 class MathParser{
     public:
@@ -22,7 +23,8 @@ class MathParser{
                 insertTo = new Node(current->type, current->value);
                 insertTo->setParent(parentOfRoot);
                 parentOfRoot->addChild(insertTo);
-                std::cout << parentOfRoot->getChild(0)->getValue() << std::endl;
+                //std::cout << parentOfRoot->getChild(0)->getValue() << std::endl;
+                
                 delete current;
                 current = getNextToken();
                 
@@ -32,7 +34,7 @@ class MathParser{
             }
         }
         
-        //not complete
+        
         void parse(){
             try {
                 if (current == nullptr){
@@ -51,7 +53,7 @@ class MathParser{
                     operationBuffer = new Node(current->type);
                     expectOperator = false;
 
-                    std::cout << "got operator at index " << index << std::endl;
+                    //std::cout << "got  " << current->type << " operator" << std::endl;
 
                     delete current;
                     current = getNextToken();                    
@@ -64,37 +66,50 @@ class MathParser{
                     throw Type::_int;
                 }
                 if (!expectOperator && (current->type == Type::_int || current->type == Type::identifier)){
+                    //std::cout << "current insertTo " << insertTo->getType() << std::endl;
+                    //std::cout << "current " << current->type << " " << current->value << std::endl;
+
                     //binary operator already in tree has higher (or same) precedence
                     if (insertTo->getType() == Type::_int || compare(insertTo->getType(), operationBuffer->getType())){
                         //set binary operation as the root
                         Node* tempParent = insertTo->getParent();
+                        //std::cout << "tempParent " << insertTo->getParent()->getType() << " " << insertTo->getParent()->getValue() << std::endl;
+
                         insertTo->unsetParent();
                         tempParent->removeChild(insertTo);
                         Node* temp = insertTo;
-                        std::cout << "temp" << temp->getValue() << std::endl;
+                        //std::cout << "temp " << temp->getType() << " " << temp->getValue() << std::endl;
+                        
                         insertTo = operationBuffer;
                         operationBuffer = nullptr;
-                        std::cout << "insertTo" << insertTo->getValue() << std::endl;
+                        //std::cout << "new insertTo " << insertTo->getType() << " " << insertTo->getValue() << std::endl;
+                        
                         //add integer literals/variables to child
                         insertTo->addChild(temp);
                         Node* newNode = new Node{current->type, current->value};
+                        //std::cout << "newNode " << newNode->getType() << " " << newNode->getValue() << std::endl;
+                        
                         insertTo->addChild(newNode);
                         insertTo->setParent(tempParent);
                         tempParent->addChild(insertTo);
                         newNode->setParent(insertTo);
                         temp->setParent(insertTo);
                         
-                        std::cout << "insertToChild0 " << insertTo->getChild(0)->getValue() << std::endl;
-                        std::cout << "insertToChild1 " << insertTo->getChild(1)->getValue() << std::endl;
+                        //std::cout << "insertToChild0 " << insertTo->getChild(0)->getType() << " " << insertTo->getChild(0)->getValue() << std::endl;
+                        //std::cout << "insertToChild1 " << insertTo->getChild(1)->getType() << " " << insertTo->getChild(1)->getValue() << std::endl;
                     } else {
+                        //std::cout << "detected operator to be higher precendece " << current->type<< std::endl;
                         
                         //binary operator to be inserted has higher precedence
                         Node* tempParent = insertTo;
+                        //std::cout << "tempParent " << insertTo->getType() << " " << insertTo->getValue() << std::endl;
 
                         insertTo = insertTo->getChild(1);
+                        //std::cout << "new insertTo " << insertTo->getType() << " " << insertTo->getValue() << std::endl;
 
                         tempParent->removeChild(insertTo);
                         Node* temp = insertTo;
+                        //std::cout << "temp " << temp->getType() << " " << temp->getValue() << std::endl;
 
                         insertTo = operationBuffer;
                         tempParent->addChild(insertTo);
@@ -102,12 +117,14 @@ class MathParser{
 
                         insertTo->addChild(temp);
                         Node* newNode = new Node{current->type, current->value};
+                        //std::cout << "newNode " << newNode->getType() << " " << newNode->getValue() << std::endl;
+
                         insertTo->addChild(newNode);
                         temp->setParent(insertTo);
                         newNode->setParent(insertTo);
 
-                        std::cout << "insertToChild0" << insertTo->getChild(0)->getValue() << std::endl;
-                        std::cout << "insertToChild1" << insertTo->getChild(1)->getValue() << std::endl;
+                        //std::cout << "insertToChild0 " << insertTo->getChild(0)->getType() << " " << insertTo->getChild(0)->getValue() << std::endl;
+                        //std::cout << "insertToChild1 " << insertTo->getChild(1)->getType() << " " << insertTo->getChild(1)->getValue() << std::endl;
                     }
                     
 
@@ -178,33 +195,26 @@ class MathParser{
                     throw std::string("a or b is not a binary operator");
                 }
 
-                std::vector<Type>::iterator iterator = std::find(operators.begin(), operators.end(), b);
+                //std::cout << "a " << a << std::endl;
+                //std::cout << "b " << b << std::endl;
 
                 switch(a){
                     case Type::add:
-                        if (iterator - operators.begin() <= 1){
-                            return true;
-                        } else {
+                        if (b == Type::asterisk || b == Type::divide){
                             return false;
+                        } else {
+                            return true;
                         }
                     case Type::subtract:
-                        if (iterator - operators.begin() <= 1){
-                            return true;
-                        } else {
+                        if (b == Type::asterisk || b == Type::divide){
                             return false;
+                        } else {
+                            return true;
                         }
                     case Type::asterisk:
-                        if (iterator - operators.begin() <= 1){
-                            return false;
-                        } else {
-                            return true;
-                        }
+                        return true;
                     case Type::divide:
-                        if (iterator - operators.begin() <= 1){
-                                return false;
-                            } else {
-                                return true;
-                            }
+                        return true;
                     default:
                         return true;
                 }

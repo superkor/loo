@@ -24,11 +24,13 @@ class Generator{
                         
                         if (currNode->getChild(0)->getChild(0)->getType() == Type::_int || isBinaryOperator(currNode->getChild(0)->getChild(0)->getType())){
                             //value of variable is pushed to stack              
-                            std::cout << "TEST TEST TEST" << (currNode->getChild(0)->getChild(0)->getType() == Type::add) << std::endl;          
-                            output << "    mov rax, " << compute(currNode->getChild(0)->getChild(0)) << "\n";
+                            //std::cout << "TEST TEST TEST" << (currNode->getChild(0)->getChild(0)->getType() == Type::add) << std::endl;          
+                            compute(currNode->getChild(0)->getChild(0));
+                            pop("rax");
+
                             //variable assigned a space in stack
                             variables[currNode->getChild(0)->getValue()] = stack_size;
-                            std::cout << "pushed " << currNode->getChild(0)->getValue() << std::endl;
+                            //std::cout << "pushed " << currNode->getChild(0)->getValue() << std::endl;
                             push("rax");
                             continue;
                         }
@@ -40,7 +42,7 @@ class Generator{
 
                             //variable assigned a space in stack
                             variables[currNode->getChild(0)->getValue()] = stack_size;
-                            std::cout << "pushed " << currNode->getChild(0)->getValue() << std::endl;
+                            //std::cout << "pushed " << currNode->getChild(0)->getValue() << std::endl;
 
                             std::stringstream offset;
                             offset << "QWORD [rsp + " << (stack_size - variables[currNode->getValue()] - 1)* 8 << "]";
@@ -116,29 +118,129 @@ class Generator{
             };      
         }
 
-        int compute(Node* node){
+        void add(){
+            output << "    add rax, qword rbx\n";
+            return;
+        }
+
+        void idivide(){
+            output << "    idiv qword rbx\n";
+            return;
+        }
+
+        void sub(){
+            output << "    sub rax, qword rbx\n";
+        }
+
+        void mul(){
+            output << "    mul qword rbx\n";
+        }
+
+        void compute(Node* node){
             if (node->getType() != Type::_int && node->getType() != Type::identifier){
-                return calculate(node);
+                calculate(node);
+                return;
             }
-            return stoi(node->getValue());
+            if (node->getType() == Type::_int){
+                output << "    mov rax, " << node->getValue() << "\n";
+                push("rax");
+                //std::cout << "pushed " << node->getValue() << std::endl;
+                
+                return;
+            } else {
+                //get variable from stack
+                if (!variables.contains(node->getValue())){
+                    throw "Identifier " + node->getValue() + " is not declared";
+                }
+
+                //variable assigned a space in stack
+                variables[node->getValue()] = stack_size;
+                //std::cout << "pushed " << node->getValue() << std::endl;
+
+                std::stringstream offset;
+                offset << "QWORD [rsp + " << (stack_size - variables[node->getValue()] - 1)* 8 << "]";
+                push(offset.str());
+                return;
+            }
         }
 
         //incomplete
-        int calculate(Node* node){
-            switch(node->getType()){
-                case Type::add:
-                    return compute(node->getChild(0)) + compute(node->getChild(1));
-                    
-                case Type::divide:
-                    return compute(node->getChild(0)) / compute(node->getChild(1));
-                    
-                case Type::subtract:
-                    return compute(node->getChild(0)) - compute(node->getChild(1));
-                    
-                case Type::asterisk:
-                    return compute(node->getChild(0)) * compute(node->getChild(1));
-                default:
-                    return false;
-            };  
+        void calculate(Node* node){
+            try {
+                switch(node->getType()){
+                    case Type::add:
+                        //std::cout << "in add " << std::endl;
+                        //left
+                        compute(node->getChild(0));
+
+                        //right
+                        compute(node->getChild(1));
+                        pop("rax");
+                        pop("rbx");
+
+                        add();
+
+                        push("rax");
+
+                        return;
+                        
+                    case Type::divide:
+                        //std::cout << "in divide " << std::endl;
+
+                        //left
+                        compute(node->getChild(0));
+
+                        //right
+                        compute(node->getChild(1));
+                        pop("rbx");
+                        output << "    cdq\n";
+                        pop("rax");
+
+                        idivide();
+                        push("rax");
+                        return;
+                        
+                    case Type::subtract:
+                        //std::cout << "in sub " << std::endl;
+
+                        //left
+                        compute(node->getChild(0));
+
+                        //right
+                        compute(node->getChild(1));
+
+                        pop("rbx");
+                        pop("rax");
+
+                        sub();
+                        push("rax");
+
+                        return;
+                        
+                    case Type::asterisk:
+                        //std::cout << "in mul " << std::endl;
+
+                        //left
+                        compute(node->getChild(0));
+
+                        //right
+                        compute(node->getChild(1));
+
+                        pop("rbx");
+
+                        pop("rax");
+
+                        mul();
+                        push("rax");
+
+                        return;
+                    default:
+                        throw "got " + node->getValue();
+                };  
+            } catch(std::string message){
+                std::cerr << "Invalid operator: " << message << std::endl;
+                exit(EXIT_FAILURE);
+            }
+            
         }
 };

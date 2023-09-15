@@ -34,7 +34,7 @@ std::vector<Token> Lexer::lex(){
             while(peek() != '\0' && std::isalnum(peek())){
                 buffer.push_back(consume());
             }
-            std::cout << buffer << "\n";
+            //std::cout << buffer << "\n";
 
 
             if (buffer == "return"){

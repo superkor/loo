@@ -5,28 +5,7 @@
 #include "node.hpp"
 #include <stack>
 #include "mathParser.cpp"
-
-
-std::ostream& operator << (std::ostream &os, Type const& types){
-    switch(types){
-        case Type::openRound:
-            return os << "(";
-        case Type::closeRound:
-            return os << ")";
-        case Type::semiColon:
-            return os << ";";
-        case Type::exit:
-            return os << "exit";
-        case Type::_int:
-            return os << "int";
-        case Type::identifier:
-            return os << "identifier";
-        case Type::equals:
-            return os << "=";
-        default:
-            return os;
-    }
-}
+#include "shared.cpp"
 
 class Parser{
     public:
@@ -41,8 +20,8 @@ class Parser{
 
                 while (nextToken != nullptr){
                     curr = last;
-                    std::cout << nextToken->type << std::endl;
-                    std::cout << "index" << index << std::endl;
+                    //std::cout << nextToken->type << std::endl;
+                    //std::cout << "index" << index << std::endl;
 
 
                     //declaring variable
@@ -93,31 +72,6 @@ class Parser{
                         math->parse();
 
                         delete math;
-
-                        /* //int literal
-                        if (nextToken == nullptr || nextToken->type != Type::_int){
-                            throw Type::_int;
-                        }
-
-                        token = consume(true);
-
-                        node = new Node(Type::_int, token->value);
-                        node->setParent(curr);
-                        curr->addChild(node);
-
-                        delete token;
-                        token = nullptr;
-
-                        curr = node;
-
-                        delete nextToken;
-                        nextToken = peek(); */
-
-                        /* if (nextToken == nullptr || nextToken->type != Type::semiColon){
-                            throw Type:: semiColon;
-                        } */
-
-                        /* consume(); */
 
                         delete nextToken;
                         nextToken = peek();
