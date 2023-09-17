@@ -8,18 +8,27 @@
 #include "generator.cpp"
 
 int main(int argc, char* argv[]){
-    if (argc != 2){
-        std::cerr << "Please specify a `.loo` file:" << std::endl;
-        std::cerr << "loo <input.loo>" << std::endl;
+    if (argc < 2){
+        std::cerr << "Please specify a `.loo` file." << std::endl;
+        std::cerr << "Usage: loo <input.loo>" << std::endl;
+        return EXIT_FAILURE;
+    } else if (argc > 2){
+        std::cerr << "You have specified too many parameters." << std::endl;
+        std::cerr << "Usage: loo <input.loo>" << std::endl;
         return EXIT_FAILURE;
     }
-    std::cout << argv[1] << std::endl;
+    //std::cout << argv[1] << std::endl;
     
     std::string contents;
 
     std::stringstream contents_stream;
 
     std::fstream input(argv[1], std::ios::in);
+
+    if (input.fail()){
+        std::cerr << "args[1] does not exist. Please ensure the file exists." << std::endl;
+        return EXIT_FAILURE;
+    }
 
     contents_stream << input.rdbuf();
 
@@ -51,6 +60,8 @@ int main(int argc, char* argv[]){
     delete parser;
     parser = nullptr;
 
+    std::cout << argv[1] << " has been compiled." << std::endl;
+    std::cout << "Run ./out to run the program." << std::endl;
 
     return EXIT_SUCCESS;
 }

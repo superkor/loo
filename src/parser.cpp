@@ -128,7 +128,17 @@ class Parser{
                 }
 
                 if (!hasExit){
-                    throw Type::exit;
+                    curr = last;
+
+                    Node* node = new Node(Type::exit);
+                    node->setParent(curr);
+                    curr->addChild(node);
+
+                    curr = node;
+
+                    node = new Node(Type::_int, "0");
+                    node->setParent(curr);
+                    curr->addChild(node);
                 }
 
                 return root;

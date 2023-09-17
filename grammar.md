@@ -1,3 +1,9 @@
+# General Syntax
+
+All lines must end with a semi colon. 
+
+Loo ignores all white space except if the white space separates between keywords/variables.
+
 # Main Function/Entry Point for Execution
 
 The compiler will automatically put all the code in a `.loo` file under a main function, `_start` in x86_64 assembly.
@@ -84,9 +90,15 @@ where `_int` refers to an integer literal, `identifier` refers to a variable typ
 
 Exiting Program: `exit(<Math statement or integer>);` to exit the program with code evaluated in the brackets.
 
+Loo does not require you to have an exit statement at the end of the program. A program without an exit statement will automatically be generated with an exit code of 0.
+
 ## Example 1 
 
-`exit(100);` will exit the program with exit code 100.
+```
+exit(100);
+```
+
+will exit the program with exit code 100.
 
 ## Example 2
 
@@ -100,6 +112,27 @@ will exit the program with exit code 10.
 
 ```
 int y = (5+2)*1;
-exit (y);
+exit(y);
 ```
 will exit the program with exit code 7.
+
+## Example 4
+
+```
+int x = 5*2;
+int y = 2026;
+int ece = 1134;
+```
+
+will exit the program with exit code 0.
+
+## Example 5
+
+```
+int x = 1;
+int y = 2;
+exit(x);
+exit(y);
+```
+
+will exit the program with exit code 1.

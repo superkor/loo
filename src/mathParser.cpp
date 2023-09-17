@@ -66,6 +66,7 @@ class MathParser{
                         exit(EXIT_FAILURE);
                     }
                     //std::cout << "; FOUND " << std::endl;
+
                     delete current;
                     current = getNextToken();
                     return;
@@ -226,6 +227,10 @@ class MathParser{
         }
 
         Token* getNextToken(){
+            if (index+1 >= tokens.size()){
+                ++index;
+                return nullptr;
+            }
             return new Token{tokens.at(++index)};
         }
 
