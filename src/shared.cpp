@@ -26,6 +26,8 @@ std::ostream& operator << (std::ostream &os, Type const& types){
             return os << "/";
         case Type::asterisk:
             return os << "*";
+        case Type::_undefined:
+            return os << "Unknown Type";
         default:
             return os;
     }

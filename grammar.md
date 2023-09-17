@@ -1,18 +1,6 @@
-# Exit Statement
+# Main Function/Entry Point for Execution
 
-Exiting Program: `exit(<Math statement or integer>);` to exit the program with code evaluated in the brackets.
-
-## Example 1 
-
-`exit(100);` will exit the program with exit code 100.
-
-## Example 2
-
-```
-int y = 5 + 2*1;
-exit(y + 1*2 + 1);
-``` 
-will exit the program with exit code 10.
+The compiler will automatically put all the code in a `.loo` file under a main function, `_start` in x86_64 assembly.
 
 # Declaring Integers
 
@@ -21,7 +9,7 @@ will exit the program with exit code 10.
 This will initalize a variable and push it to the stack.
 
 # Math
-Order of operations will be conducted (BEDMAS) - only DMAS is implemented.
+Order of operations will be conducted (BEDMAS). Note that exponents is not supported in math expressions.
 
 `mathParser.cpp:parse()` will parse a mathematical expression by making a tree as if the expression is the inorder traversal, ensuring operations higher on the order of precedence is inserted towards the bottom of the tree.
 
@@ -91,3 +79,27 @@ graph TD;
     F-->G["Type: identifier\nvalue: 'w'"]
 ```
 where `_int` refers to an integer literal, `identifier` refers to a variable type, `exit` refers to the exit statement.
+
+# Exit Statement
+
+Exiting Program: `exit(<Math statement or integer>);` to exit the program with code evaluated in the brackets.
+
+## Example 1 
+
+`exit(100);` will exit the program with exit code 100.
+
+## Example 2
+
+```
+int y = 5 + 2*1;
+exit(y + 1*2 + 1);
+``` 
+will exit the program with exit code 10.
+
+## Example 3 
+
+```
+int y = (5+2)*1;
+exit (y);
+```
+will exit the program with exit code 7.
